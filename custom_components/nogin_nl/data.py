@@ -1,3 +1,5 @@
+"""Typed configuration entries and runtime data for Nogin.nl."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -16,6 +18,8 @@ type NoginNLConfigEntry = ConfigEntry[NoginNLData]
 
 @dataclass
 class NoginNLData:
+    """Hold the API client, polling coordinator, and integration metadata."""
+
     client: NoginNLApiClient
     coordinator: NoginNLDataUpdateCoordinator
     integration: Integration

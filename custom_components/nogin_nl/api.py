@@ -1,3 +1,5 @@
+"""Asynchronous client and error types for the Nogin.nl API."""
+
 from __future__ import annotations
 
 import asyncio
@@ -66,10 +68,13 @@ def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
 
 
 class NoginNLApiClient:
+    """Read and update person statuses using a shared aiohttp session."""
+
     def __init__(
         self,
         session: aiohttp.ClientSession,
     ) -> None:
+        """Store the Home Assistant-managed HTTP session."""
         self._session = session
 
     async def async_get_data(self) -> Any:
@@ -79,7 +84,7 @@ class NoginNLApiClient:
             url="https://api.nogin.nl/persons",
         )
 
-    async def async_set_nog_in_nl(self, name: str, is_nog_in_nl: bool) -> Any:
+    async def async_set_nog_in_nl(self, name: str, is_nog_in_nl: bool) -> Any:  # noqa: FBT001
         """Get data from the API."""
         return await self._api_wrapper(
             method="patch",

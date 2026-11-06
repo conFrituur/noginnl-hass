@@ -18,6 +18,7 @@
             "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
         },
         "abort": {
+            "authentication_not_supported": "Nogin.nl denied access. This integration does not support credentials. Please contact the service administrator and reload the integration once access is restored.",
             "already_configured": "Nogin.nl is already configured. Use its options to change the selected people."
         }
     },

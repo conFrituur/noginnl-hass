@@ -1,3 +1,5 @@
+"""Shared coordinator and device metadata for Nogin.nl entities."""
+
 from __future__ import annotations
 
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -8,6 +10,8 @@ from .coordinator import NoginNLDataUpdateCoordinator
 
 
 class NoginNLEntity(CoordinatorEntity[NoginNLDataUpdateCoordinator]):
+    """Associate person entities with their config entry's device."""
+
     _attr_attribution = ATTRIBUTION
     _attr_has_entity_name = True
 

@@ -1,3 +1,5 @@
+"""Coordinate polling and API error handling for Nogin.nl."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

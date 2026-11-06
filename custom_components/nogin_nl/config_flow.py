@@ -102,6 +102,13 @@ class NoginNLFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._async_abort_entries_match()
         return await _async_person_form(self, "user", None, user_input)
 
+    async def async_step_reauth(
+        self,
+        entry_data: dict[str, Any],  # noqa: ARG002
+    ) -> config_entries.ConfigFlowResult:
+        """Explain access denial when there are no supported credentials to change."""
+        return self.async_abort(reason="authentication_not_supported")
+
 
 class NoginNLOptionsFlow(config_entries.OptionsFlowWithReload):
     """Update person selection and reload the integration."""
