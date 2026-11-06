@@ -2,20 +2,34 @@
     "config": {
         "step": {
             "user": {
-                "description": "If you need help with the configuration have a look here: {documentation_url}",
+                "title": "Select people",
+                "description": "Choose the people to add as switches. You can change this selection later in the integration options.",
                 "data": {
-                    "username": "Username",
-                    "password": "Password"
+                    "persons": "People"
                 }
             }
         },
         "error": {
-            "auth": "Username/Password is wrong.",
-            "connection": "Unable to connect to the server.",
-            "unknown": "Unknown error occurred."
+            "connection": "Unable to fetch people from Nogin.nl. Please try again.",
+            "invalid_person": "Select people from the available list."
         },
         "abort": {
-            "already_configured": "This entry is already configured."
+            "already_configured": "Nogin.nl is already configured. Use its options to change the selected people."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Select people",
+                "description": "Tick the people whose switches you want in Home Assistant. Unticking a person removes their switch. You can leave everyone unticked.",
+                "data": {
+                    "persons": "People"
+                }
+            }
+        },
+        "error": {
+            "connection": "Unable to fetch people from Nogin.nl. Please try again.",
+            "invalid_person": "Select people from the available list."
         }
     }
 }

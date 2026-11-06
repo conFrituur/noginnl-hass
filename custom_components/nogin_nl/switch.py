@@ -1,10 +1,13 @@
+"""Switches for the people selected in the Nogin.nl configuration."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 
+from .const import CONF_PERSONS
 from .entity import NoginNLEntity
 
 if TYPE_CHECKING:
@@ -16,28 +19,27 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,  # noqa: ARG001 Unused function argument: `hass`
+    hass: HomeAssistant,
     entry: NoginNLConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the switch platform."""
     coordinator = entry.runtime_data.coordinator
-    known_people: set[str] = set()
+    selected = entry.options.get(CONF_PERSONS, entry.data.get(CONF_PERSONS, []))
+    selected_ids = {f"{entry.entry_id}_{name}" for name in selected}
+    registry = er.async_get(hass)
+    for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if (
+            entity.domain == "switch"
+            and entity.platform == entry.domain
+            and entity.unique_id not in selected_ids
+        ):
+            registry.async_remove(entity.entity_id)
 
-    @callback
-    def async_add_new_people() -> None:
-        """Add switches for people discovered during setup or later polls."""
-        entities = []
-        for person in coordinator.data:
-            name = person["name"]
-            if name not in known_people:
-                known_people.add(name)
-                entities.append(NoginNLSwitch(coordinator, name))
-        if entities:
-            async_add_entities(entities)
-
-    async_add_new_people()
-    entry.async_on_unload(coordinator.async_add_listener(async_add_new_people))
+    entities = []
+    for name in dict.fromkeys(selected):
+        entities.append(NoginNLSwitch(coordinator, name))  # noqa: PERF401
+    async_add_entities(entities)
 
 
 class NoginNLSwitch(NoginNLEntity, SwitchEntity):
