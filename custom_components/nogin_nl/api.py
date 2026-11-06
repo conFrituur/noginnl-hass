@@ -11,6 +11,8 @@ from typing import Any
 
 import aiohttp
 
+from .const import API_BASE_URL
+
 
 class NoginNLApiClientError(Exception):
     """Exception to indicate a general API error."""
@@ -81,14 +83,14 @@ class NoginNLApiClient:
         """Get data from the API."""
         return await self._api_wrapper(
             method="get",
-            url="https://api.nogin.nl/persons",
+            url=f"{API_BASE_URL}/persons",
         )
 
     async def async_set_nog_in_nl(self, name: str, is_nog_in_nl: bool) -> Any:  # noqa: FBT001
         """Get data from the API."""
         return await self._api_wrapper(
             method="patch",
-            url="https://api.nogin.nl/persons/" + name,
+            url=f"{API_BASE_URL}/persons/{name}",
             data={"isNogInNL": is_nog_in_nl},
             headers={"Content-type": "application/json; charset=UTF-8"},
         )
