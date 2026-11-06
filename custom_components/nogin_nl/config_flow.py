@@ -20,12 +20,12 @@ if TYPE_CHECKING:
 async def _async_person_form(
     flow: config_entries.ConfigFlow | config_entries.OptionsFlow,
     step_id: str,
-    selected: list[str],
+    selected: list[str] | None,
     user_input: dict[str, Any] | None,
 ) -> config_entries.ConfigFlowResult:
     """Fetch choices and handle the shared person selection form."""
     errors: dict[str, str] = {}
-    names = set(selected)
+    names = set(selected or [])
     try:
         client = NoginNLApiClient(async_get_clientsession(flow.hass))
         people = await client.async_get_data()
@@ -41,11 +41,16 @@ async def _async_person_form(
                 )
             errors[CONF_PERSONS] = "invalid_person"
 
+    if user_input is not None:
+        defaults = user_input.get(CONF_PERSONS, [])
+    else:
+        defaults = sorted(names) if selected is None else selected
+
     return flow.async_show_form(
         step_id=step_id,
         data_schema=vol.Schema(
             {
-                vol.Required(CONF_PERSONS, default=selected): selector.SelectSelector(
+                vol.Required(CONF_PERSONS, default=defaults): selector.SelectSelector(
                     selector.SelectSelectorConfig(
                         options=[
                             {"value": name, "label": name.capitalize()}
@@ -80,7 +85,7 @@ class NoginNLFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     ) -> config_entries.ConfigFlowResult:
         """Show the available people before creating the entry."""
         self._async_abort_entries_match()
-        return await _async_person_form(self, "user", [], user_input)
+        return await _async_person_form(self, "user", None, user_input)
 
 
 class NoginNLOptionsFlow(config_entries.OptionsFlowWithReload):

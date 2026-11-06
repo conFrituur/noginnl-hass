@@ -2,7 +2,7 @@
 
 Add the Nogin.nl integration under **Settings → Devices & services → Add integration**.
 Setup fetches the available people from the API and lets you tick which people
-should have switches. Nobody is selected by default.
+should have switches. Everyone is selected by default during initial setup; untick anyone you do not want to add.
 
 To add or remove people later, open **Settings → Devices & services → Nogin.nl**
 and choose **Configure** (the options/gear button). Review the checkboxes and save.
