@@ -56,7 +56,7 @@ class NoginNLSwitch(NoginNLEntity, SwitchEntity):
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{person_name}"
         self.entity_description = SwitchEntityDescription(
             key=person_name,
-            name=f"Nogin.nl {person_name.capitalize()}",
+            name=person_name.capitalize(),
             icon="mdi:map-marker-account",
         )
 
