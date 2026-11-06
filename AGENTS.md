@@ -37,7 +37,7 @@ response:
 
 ## Build, Test, and Development Commands
 
-Use Python 3.14, matching CI and the Ruff target. From the repository root, with a virtual environment activated:
+Use Python 3.14.2 or newer within the 3.14 series, matching Home Assistant's minimum version, CI, and the Ruff target. From the repository root, with a virtual environment activated:
 
 - `bash scripts/setup`: install common and development requirements, including Home Assistant and Ruff.
 - `python3 -m pip install -r requirements_test.txt`: install development and test dependencies.
@@ -58,9 +58,9 @@ Use four-space Python indentation, type annotations, and descriptive docstrings.
 
 ## Testing Guidelines
 
-Use pytest with `pytest-homeassistant-custom-component`. Keep its pinned version (`0.13.340`) aligned with Home Assistant (`2026.6.4`); upgrade them together. Newer Home Assistant releases use the official `pytest-homeassistant` package, which must not be installed alongside the older plugin.
+Use pytest with the official `pytest-homeassistant` package. Home Assistant and `pytest-homeassistant` are both pinned to `2026.11.0` in the requirements files; upgrade them together. Import fixtures and helpers from `pytest_homeassistant`. Do not install the older `pytest-homeassistant-custom-component` plugin alongside it; uninstall that plugin before upgrading an existing environment.
 
-Name tests `tests/test_*.py`. Shared fixtures in `tests/conftest.py` enable custom integrations, create mock configuration entries, and mock API clients. Cover setup/options flows, selection changes, switch writes, polling/unload, and API error recovery through Home Assistant's fixtures. Mock all external requests; never change real API statuses in tests.
+Name tests `tests/test_*.py`. The test plugin enables custom integrations automatically. Shared fixtures in `tests/conftest.py` create mock configuration entries and mock API clients. Cover setup/options flows, selection changes, switch writes, polling/unload, and API error recovery through Home Assistant's fixtures. Mock all external requests; never change real API statuses in tests.
 
 `pytest.ini` enables async tests, disables network sockets except Unix sockets, and reports integration line coverage. Maintain the current full line coverage when changing behavior; no minimum threshold is enforced automatically. `.github/workflows/test.yml` runs the suite on pushes and pull requests to `main`. Supplement automated tests with local Home Assistant checks when UI behavior changes, and record validation in the pull request.
 

@@ -6,18 +6,13 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.nogin_nl.api import NoginNLApiClient
 from custom_components.nogin_nl.const import CONF_PERSONS, DOMAIN
 
 if TYPE_CHECKING:
     from collections.abc import Generator
-
-
-@pytest.fixture(autouse=True)
-def custom_integrations(enable_custom_integrations: None) -> None:
-    """Enable loading this repository's integration."""
 
 
 @pytest.fixture
