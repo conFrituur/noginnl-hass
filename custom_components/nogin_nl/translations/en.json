@@ -2,40 +2,40 @@
     "config": {
         "step": {
             "user": {
-                "title": "Select people",
-                "description": "Choose the people to add as switches. You can change this selection later in the integration options.",
+                "title": "Select bruurs",
+                "description": "Choose the bruurs to add as switches. You can change this selection later in the integration options.",
                 "data": {
-                    "persons": "People"
+                    "persons": "Bruurs"
                 }
             }
         },
         "error": {
-            "no_persons": "No people are currently available from Nogin.nl. Please try again later.",
+            "no_persons": "No bruurs are currently available from Nogin.nl. Please try again later.",
             "connection": "Unable to communicate with Nogin.nl. Check your connection and try again.",
-            "invalid_person": "Select people from the available list.",
+            "invalid_person": "Select bruurs from the available list.",
             "auth": "Nogin.nl denied access (HTTP 401 or 403). This integration does not currently support credentials. Please contact the service administrator.",
             "rate_limit": "Nogin.nl is receiving too many requests. Please wait before trying again.",
             "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
         },
         "abort": {
             "authentication_not_supported": "Nogin.nl denied access. This integration does not support credentials. Please contact the service administrator and reload the integration once access is restored.",
-            "already_configured": "Nogin.nl is already configured. Use its options to change the selected people."
+            "already_configured": "Nogin.nl is already configured. Use its options to change the selected bruurs."
         }
     },
     "options": {
         "step": {
             "init": {
-                "title": "Select people",
-                "description": "Tick the people whose switches you want in Home Assistant. Unticking a person removes their switch. You can leave everyone unticked.",
+                "title": "Select bruurs",
+                "description": "Tick the bruurs whose switches you want in Home Assistant. Unticking a person removes their switch. You can leave everyone unticked.",
                 "data": {
-                    "persons": "People"
+                    "persons": "Bruurs"
                 }
             }
         },
         "error": {
-            "no_persons": "No people are currently available from Nogin.nl. Previously selected people remain listed so you can keep or remove them. Please try again later to add people.",
+            "no_persons": "No bruurs are currently available from Nogin.nl. Previously selected bruurs remain listed so you can keep or remove them. Please try again later to add bruurs.",
             "connection": "Unable to communicate with Nogin.nl. Check your connection and try again.",
-            "invalid_person": "Select people from the available list.",
+            "invalid_person": "Select bruurs from the available list.",
             "auth": "Nogin.nl denied access (HTTP 401 or 403). This integration does not currently support credentials. Please contact the service administrator.",
             "rate_limit": "Nogin.nl is receiving too many requests. Please wait before trying again.",
             "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
