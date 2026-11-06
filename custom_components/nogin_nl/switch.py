@@ -6,9 +6,6 @@ from homeassistant.components.switch import SwitchEntity, SwitchEntityDescriptio
 
 from .entity import NoginNLEntity
 
-import logging
-_LOGGER = logging.getLogger(__name__)
-
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -41,6 +38,8 @@ async def async_setup_entry(
 
 
 class NoginNLSwitch(NoginNLEntity, SwitchEntity):
+    """Represent a person's Nogin.nl status."""
+
     def __init__(
         self,
         coordinator: NoginNLDataUpdateCoordinator,
@@ -51,23 +50,33 @@ class NoginNLSwitch(NoginNLEntity, SwitchEntity):
         self.entity_description = entity_description
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | None:
         """Return true if the switch is on."""
-        is_on: bool | None = None
-
         for person in self.coordinator.data:
-            if person.get('name') == 'stefan':
-                is_on = person.get('isNogInNL')
+            if person.get("name") == "stefan":
+                return person.get("isNogInNL")
+        return None
 
-        _LOGGER.info(self.coordinator.data)
-        return is_on
+    async def _async_set_status(self, *, is_nog_in_nl: bool) -> None:
+        """Publish the status confirmed by PATCH without waiting for a GET."""
+        person = (
+            await self.coordinator.config_entry.runtime_data.client.async_set_nog_in_nl(
+                "stefan", is_nog_in_nl
+            )
+        )
+        updated_people = []
+        for item in self.coordinator.data:
+            if item.get("name") == "stefan":
+                updated_people.append(person)
+            else:
+                updated_people.append(item)
+
+        self.coordinator.async_set_updated_data(updated_people)
 
     async def async_turn_on(self, **_: Any) -> None:
         """Turn on the switch."""
-        await self.coordinator.config_entry.runtime_data.client.async_set_nog_in_nl("stefan", True)
-        await self.coordinator.async_request_refresh()
+        await self._async_set_status(is_nog_in_nl=True)
 
     async def async_turn_off(self, **_: Any) -> None:
         """Turn off the switch."""
-        await self.coordinator.config_entry.runtime_data.client.async_set_nog_in_nl("stefan", False)
-        await self.coordinator.async_request_refresh()
+        await self._async_set_status(is_nog_in_nl=False)
