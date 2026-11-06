@@ -1,5 +1,3 @@
-"""Sample API Client."""
-
 from __future__ import annotations
 
 import asyncio
@@ -12,24 +10,24 @@ from typing import Any
 import aiohttp
 
 
-class IntegrationBlueprintApiClientError(Exception):
+class NoginNLApiClientError(Exception):
     """Exception to indicate a general API error."""
 
 
-class IntegrationBlueprintApiClientCommunicationError(
-    IntegrationBlueprintApiClientError,
+class NoginNLApiClientCommunicationError(
+    NoginNLApiClientError,
 ):
     """Exception to indicate a communication error."""
 
 
-class IntegrationBlueprintApiClientAuthenticationError(
-    IntegrationBlueprintApiClientError,
+class NoginNLApiClientAuthenticationError(
+    NoginNLApiClientError,
 ):
     """Exception to indicate an authentication error."""
 
 
-class IntegrationBlueprintApiClientRateLimitError(
-    IntegrationBlueprintApiClientCommunicationError,
+class NoginNLApiClientRateLimitError(
+    NoginNLApiClientCommunicationError,
 ):
     """Exception to indicate the API is rate limiting us."""
 
@@ -55,45 +53,38 @@ def _verify_response_or_raise(response: aiohttp.ClientResponse) -> None:
     """Verify that the response is valid."""
     if response.status in (401, 403):
         msg = "Invalid credentials"
-        raise IntegrationBlueprintApiClientAuthenticationError(
+        raise NoginNLApiClientAuthenticationError(
             msg,
         )
     if response.status == HTTPStatus.TOO_MANY_REQUESTS:
         msg = "Rate limited by the API"
-        raise IntegrationBlueprintApiClientRateLimitError(
+        raise NoginNLApiClientRateLimitError(
             msg,
             retry_after=_parse_retry_after(response),
         )
     response.raise_for_status()
 
 
-class IntegrationBlueprintApiClient:
-    """Sample API Client."""
-
+class NoginNLApiClient:
     def __init__(
         self,
-        username: str,
-        password: str,
         session: aiohttp.ClientSession,
     ) -> None:
-        """Sample API Client."""
-        self._username = username
-        self._password = password
         self._session = session
 
     async def async_get_data(self) -> Any:
         """Get data from the API."""
         return await self._api_wrapper(
             method="get",
-            url="https://jsonplaceholder.typicode.com/posts/1",
+            url="https://api.nogin.nl/persons",
         )
 
-    async def async_set_title(self, value: str) -> Any:
+    async def async_set_nog_in_nl(self, name: str, is_nog_in_nl: bool) -> Any:
         """Get data from the API."""
         return await self._api_wrapper(
             method="patch",
-            url="https://jsonplaceholder.typicode.com/posts/1",
-            data={"title": value},
+            url="https://api.nogin.nl/persons/" + name,
+            data={"isNogInNL": is_nog_in_nl},
             headers={"Content-type": "application/json; charset=UTF-8"},
         )
 
@@ -118,21 +109,21 @@ class IntegrationBlueprintApiClient:
 
         except TimeoutError as exception:
             msg = f"Timeout error fetching information - {exception}"
-            raise IntegrationBlueprintApiClientCommunicationError(
+            raise NoginNLApiClientCommunicationError(
                 msg,
             ) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
             msg = f"Error fetching information - {exception}"
-            raise IntegrationBlueprintApiClientCommunicationError(
+            raise NoginNLApiClientCommunicationError(
                 msg,
             ) from exception
-        except IntegrationBlueprintApiClientError:
+        except NoginNLApiClientError:
             # Our own typed errors (auth, rate-limit, communication) are already
             # meaningful; re-raise so callers can branch on them instead of masking
             # them with the broad handler below.
             raise
         except Exception as exception:  # pylint: disable=broad-except
             msg = f"Something really wrong happened! - {exception}"
-            raise IntegrationBlueprintApiClientError(
+            raise NoginNLApiClientError(
                 msg,
             ) from exception
