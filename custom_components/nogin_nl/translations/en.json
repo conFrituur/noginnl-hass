@@ -11,8 +11,11 @@
         },
         "error": {
             "no_persons": "No people are currently available from Nogin.nl. Please try again later.",
-            "connection": "Unable to fetch people from Nogin.nl. Please try again.",
-            "invalid_person": "Select people from the available list."
+            "connection": "Unable to communicate with Nogin.nl. Check your connection and try again.",
+            "invalid_person": "Select people from the available list.",
+            "auth": "Nogin.nl denied access (HTTP 401 or 403). This integration does not currently support credentials. Please contact the service administrator.",
+            "rate_limit": "Nogin.nl is receiving too many requests. Please wait before trying again.",
+            "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
         },
         "abort": {
             "already_configured": "Nogin.nl is already configured. Use its options to change the selected people."
@@ -30,8 +33,11 @@
         },
         "error": {
             "no_persons": "No people are currently available from Nogin.nl. Previously selected people remain listed so you can keep or remove them. Please try again later to add people.",
-            "connection": "Unable to fetch people from Nogin.nl. Please try again.",
-            "invalid_person": "Select people from the available list."
+            "connection": "Unable to communicate with Nogin.nl. Check your connection and try again.",
+            "invalid_person": "Select people from the available list.",
+            "auth": "Nogin.nl denied access (HTTP 401 or 403). This integration does not currently support credentials. Please contact the service administrator.",
+            "rate_limit": "Nogin.nl is receiving too many requests. Please wait before trying again.",
+            "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
         }
     }
 }

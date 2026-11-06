@@ -10,8 +10,14 @@ from homeassistant.core import callback
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import NoginNLApiClient, NoginNLApiClientError
-from .const import CONF_PERSONS, DOMAIN
+from .api import (
+    NoginNLApiClient,
+    NoginNLApiClientAuthenticationError,
+    NoginNLApiClientCommunicationError,
+    NoginNLApiClientError,
+    NoginNLApiClientRateLimitError,
+)
+from .const import CONF_PERSONS, DOMAIN, LOGGER
 
 if TYPE_CHECKING:
     from .data import NoginNLConfigEntry
@@ -29,8 +35,15 @@ async def _async_person_form(
     try:
         client = NoginNLApiClient(async_get_clientsession(flow.hass))
         people = await client.async_get_data()
-    except NoginNLApiClientError:
+    except NoginNLApiClientAuthenticationError:
+        errors["base"] = "auth"
+    except NoginNLApiClientRateLimitError:
+        errors["base"] = "rate_limit"
+    except NoginNLApiClientCommunicationError:
         errors["base"] = "connection"
+    except NoginNLApiClientError as exception:
+        LOGGER.exception("Unexpected API error while fetching people: %s", exception)
+        errors["base"] = "unknown"
     else:
         names.update(person["name"] for person in people)
         if not people:

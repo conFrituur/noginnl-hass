@@ -112,6 +112,12 @@ class NoginNLApiClient:
             raise NoginNLApiClientCommunicationError(
                 msg,
             ) from exception
+        except aiohttp.ClientResponseError as exception:
+            msg = (
+                f"API response error for {method.upper()} {url}: "
+                f"HTTP {exception.status} ({exception.message})"
+            )
+            raise NoginNLApiClientError(msg) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
             msg = f"Error fetching information - {exception}"
             raise NoginNLApiClientCommunicationError(
@@ -123,7 +129,10 @@ class NoginNLApiClient:
             # them with the broad handler below.
             raise
         except Exception as exception:  # pylint: disable=broad-except
-            msg = f"Something really wrong happened! - {exception}"
+            msg = (
+                f"Unexpected error for {method.upper()} {url}: "
+                f"{type(exception).__name__}: {exception}"
+            )
             raise NoginNLApiClientError(
                 msg,
             ) from exception
