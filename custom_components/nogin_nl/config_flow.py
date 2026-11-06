@@ -110,8 +110,8 @@ class NoginNLFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_abort(reason="authentication_not_supported")
 
 
-class NoginNLOptionsFlow(config_entries.OptionsFlowWithReload):
-    """Update person selection and reload the integration."""
+class NoginNLOptionsFlow(config_entries.OptionsFlow):
+    """Update person selection without restarting existing switches."""
 
     async def async_step_init(
         self,

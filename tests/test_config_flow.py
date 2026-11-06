@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 from homeassistant import config_entries
+from homeassistant.const import EVENT_STATE_CHANGED, STATE_OFF, STATE_ON
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers import entity_registry as er
 
 from custom_components.nogin_nl.api import (
     NoginNLApiClientAuthenticationError,
@@ -52,7 +54,7 @@ async def test_options_selection(
     config_entry: MockConfigEntry,
     selected: list[str],
 ) -> None:
-    """Options preserve defaults and reload switches when selection changes."""
+    """Options preserve defaults and update switches when selection changes."""
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
@@ -173,3 +175,76 @@ async def test_person_removed_before_submission(
     )
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {CONF_PERSONS: "invalid_person"}
+
+
+async def test_options_keep_existing_switch_available(
+    hass: HomeAssistant, mock_api: AsyncMock, config_entry: MockConfigEntry
+) -> None:
+    """Changing the selected people must not interrupt switches that remain selected."""
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    coordinator = config_entry.runtime_data.coordinator
+    original_state = hass.states.get("switch.family_sjaak")
+    registry = er.async_get(hass)
+    original_entity = registry.async_get(original_state.entity_id)
+    events = []
+    unsubscribe = hass.bus.async_listen(EVENT_STATE_CHANGED, events.append)
+
+    for selected in (["sjaak", "harrie"], ["sjaak"]):
+        mock_api.async_get_data.reset_mock()
+        result = await hass.config_entries.options.async_init(config_entry.entry_id)
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"], {CONF_PERSONS: selected}
+        )
+        await hass.async_block_till_done()
+        assert result["type"] is FlowResultType.CREATE_ENTRY
+        assert config_entry.runtime_data.coordinator is coordinator
+        assert hass.states.get("switch.family_sjaak") is original_state
+        assert registry.async_get(original_state.entity_id) is original_entity
+        # Only the form's two API reads; no extra setup/first refresh.
+        assert mock_api.async_get_data.await_count == 2  # noqa: PLR2004
+        assert not any(
+            event.data["entity_id"] == original_state.entity_id for event in events
+        )
+        if "harrie" in selected:
+            assert hass.states.get("switch.family_harrie").state == STATE_OFF
+        else:
+            assert hass.states.get("switch.family_harrie") is None
+            assert registry.async_get("switch.family_harrie") is None
+    unsubscribe()
+    mock_api.async_set_nog_in_nl.assert_not_awaited()
+
+    # Removing all switches and adding one back also works without a reload.
+    for selected in ([], ["sjaak"]):
+        result = await hass.config_entries.options.async_init(config_entry.entry_id)
+        await hass.config_entries.options.async_configure(
+            result["flow_id"], {CONF_PERSONS: selected}
+        )
+        await hass.async_block_till_done()
+        assert config_entry.runtime_data.coordinator is coordinator
+        if selected:
+            assert hass.states.get("switch.family_sjaak").state == STATE_ON
+        else:
+            assert hass.states.get("switch.family_sjaak") is None
+
+
+async def test_options_listener_removed_on_unload(
+    hass: HomeAssistant, mock_api: AsyncMock, config_entry: MockConfigEntry
+) -> None:
+    """An unloaded switch platform must not respond to later options changes."""
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert await hass.config_entries.async_unload(config_entry.entry_id)
+    await hass.async_block_till_done()
+    hass.config_entries.async_update_entry(
+        config_entry, options={CONF_PERSONS: ["harrie"]}
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("switch.family_harrie") is None
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.states.get("switch.family_harrie").state == STATE_OFF
+    assert hass.states.get("switch.family_sjaak") is None
+    mock_api.async_set_nog_in_nl.assert_not_awaited()

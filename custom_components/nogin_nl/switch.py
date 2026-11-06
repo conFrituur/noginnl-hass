@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from .const import CONF_PERSONS
@@ -25,21 +26,40 @@ async def async_setup_entry(
 ) -> None:
     """Set up the switch platform."""
     coordinator = entry.runtime_data.coordinator
-    selected = entry.options.get(CONF_PERSONS, entry.data.get(CONF_PERSONS, []))
-    selected_ids = {f"{entry.entry_id}_{name}" for name in selected}
     registry = er.async_get(hass)
-    for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
-        if (
-            entity.domain == "switch"
-            and entity.platform == entry.domain
-            and entity.unique_id not in selected_ids
-        ):
-            registry.async_remove(entity.entity_id)
+    known_people: set[str] = set()
 
-    entities = []
-    for name in dict.fromkeys(selected):
-        entities.append(NoginNLSwitch(coordinator, name))  # noqa: PERF401
-    async_add_entities(entities)
+    @callback
+    def async_sync_selected_people() -> None:
+        """Add and remove selected switches while leaving retained switches alone."""
+        selected = entry.options.get(CONF_PERSONS, entry.data.get(CONF_PERSONS, []))
+        selected_ids = {f"{entry.entry_id}_{name}" for name in selected}
+        for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+            if (
+                entity.domain == "switch"
+                and entity.platform == entry.domain
+                and entity.unique_id not in selected_ids
+            ):
+                registry.async_remove(entity.entity_id)
+
+        entities = []
+        known_people.intersection_update(selected)
+        for name in selected:
+            if name not in known_people:
+                known_people.add(name)
+                entities.append(NoginNLSwitch(coordinator, name))
+        if entities:
+            async_add_entities(entities)
+
+    async def async_update_options(
+        _hass: HomeAssistant,
+        _entry: NoginNLConfigEntry,
+    ) -> None:
+        """Apply options to this platform without reloading the config entry."""
+        async_sync_selected_people()
+
+    async_sync_selected_people()
+    entry.async_on_unload(entry.add_update_listener(async_update_options))
 
 
 class NoginNLSwitch(NoginNLEntity, SwitchEntity):
