@@ -33,7 +33,9 @@ async def _async_person_form(
         errors["base"] = "connection"
     else:
         names.update(person["name"] for person in people)
-        if user_input is not None:
+        if not people:
+            errors["base"] = "no_persons"
+        if user_input is not None and names:
             chosen = user_input.get(CONF_PERSONS, [])
             if set(chosen).issubset(names):
                 return flow.async_create_entry(

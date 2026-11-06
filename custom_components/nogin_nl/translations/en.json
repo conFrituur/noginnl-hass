@@ -10,6 +10,7 @@
             }
         },
         "error": {
+            "no_persons": "No people are currently available from Nogin.nl. Please try again later.",
             "connection": "Unable to fetch people from Nogin.nl. Please try again.",
             "invalid_person": "Select people from the available list."
         },
@@ -28,6 +29,7 @@
             }
         },
         "error": {
+            "no_persons": "No people are currently available from Nogin.nl. Previously selected people remain listed so you can keep or remove them. Please try again later to add people.",
             "connection": "Unable to fetch people from Nogin.nl. Please try again.",
             "invalid_person": "Select people from the available list."
         }
