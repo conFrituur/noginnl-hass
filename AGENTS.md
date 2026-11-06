@@ -6,6 +6,35 @@ This repository contains the Nogin.nl Home Assistant custom integration. Impleme
 
 `config/configuration.yaml` configures the local Home Assistant instance. Development helpers live in `scripts/`, and GitHub Actions workflows live in `.github/workflows/`. No test directory or brand assets are currently included. Some documentation and configuration retain blueprint placeholders; use the actual domain `nogin_nl` for new integration code.
 
+# API nogin.nl
+
+The REST Api is at `api.nogin.nl`
+
+it has 3 endpoints
+
+GET /persons
+which returns all persons with status:
+
+`
+[
+  {"name": "sjaak", "isNogInNL": true},
+  {"name": "harrie", "isNogInNL": false}
+]
+`
+GET /persons/{name}
+which returns a single person
+`
+{"name": "sjaak", "isNogInNL": true}
+`
+
+PATCH /persons/{name}
+to update the `isNogInNL` bool of a person
+
+request body:
+`{"isNogInNL": false}`
+response:
+`{"name": "sjaak", "isNogInNL": false}`
+
 ## Build, Test, and Development Commands
 
 Use Python 3.14, matching CI and the Ruff target. From the repository root, with a virtual environment activated:
