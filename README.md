@@ -1,6 +1,6 @@
 # Nogin.nl bruur switches
 
-Create switch entities for bruurs from [Nogin.nl](https://nogin.nl). Each switch shows
+Create switch entities for bruurs from Nogin.nl. Each switch shows
 whether that person is still in the Netherlands; changing it updates their status
 on Nogin.nl.
 
