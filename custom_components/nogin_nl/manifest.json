@@ -1,16 +1,20 @@
 {
   "domain": "nogin_nl",
   "name": "Nogin.nl",
+  "categories": [
+    "presence_location"
+  ],
   "codeowners": [
     "@conFrituur"
   ],
   "config_flow": true,
-  "single_config_entry": true,
-  "after_dependencies": [
-    "http"
+  "connectivity": [
+    "cloud"
   ],
   "documentation": "https://github.com/conFrituur/noginnl-hass",
+  "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/conFrituur/noginnl-hass/issues",
+  "single_config_entry": true,
   "version": "0.1.0"
 }
