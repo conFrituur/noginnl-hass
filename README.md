@@ -20,7 +20,7 @@ on Nogin.nl.
 
 ## Operational Characteristics
 
-Polls the status of all bruurs once a minute via REST Api nogin.nl
+* Polls the status of all bruurs once a minute.
 
 ## Configuration
 
