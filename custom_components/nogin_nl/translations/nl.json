@@ -1,0 +1,44 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Selecteer bruurs",
+                "description": "Kies de bruurs die je wilt toevoegen. Je kunt deze selectie later wijzigen in de integratieopties.",
+                "data": {
+                    "persons": "Bruurs"
+                }
+            }
+        },
+        "error": {
+            "no_persons": "Er zijn momenteel geen bruurs beschikbaar via Nogin.nl. Probeer het later opnieuw.",
+            "connection": "Kan geen verbinding maken met Nogin.nl. Controleer je verbinding en probeer het opnieuw.",
+            "invalid_person": "Selecteer bruurs uit de beschikbare lijst.",
+            "auth": "Nogin.nl heeft de toegang geweigerd (HTTP 401 of 403). Deze integratie ondersteunt momenteel geen inloggegevens. Neem contact op met de beheerder van de dienst.",
+            "rate_limit": "Nogin.nl ontvangt te veel verzoeken. Wacht even voordat je het opnieuw probeert.",
+            "unknown": "Er is een onverwachte API-fout opgetreden. Bekijk de Home Assistant-logboeken voor meer informatie."
+        },
+        "abort": {
+            "authentication_not_supported": "Nogin.nl heeft de toegang geweigerd. Deze integratie ondersteunt geen inloggegevens. Neem contact op met de beheerder van de dienst en herlaad de integratie zodra de toegang is hersteld.",
+            "already_configured": "Nogin.nl is al geconfigureerd. Gebruik de integratieopties om de geselecteerde bruurs te wijzigen."
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Selecteer bruurs",
+                "description": "Vink de bruurs aan die in Home Assistant wilt. Als je een bruur uitvinkt, wordt zijn entity weer verwijderd.",
+                "data": {
+                    "persons": "Bruurs"
+                }
+            }
+        },
+        "error": {
+            "no_persons": "Er zijn momenteel geen bruurs beschikbaar via Nogin.nl. Eerder geselecteerde bruurs blijven in de lijst staan, zodat je ze kunt behouden of verwijderen. Probeer het later opnieuw om bruurs toe te voegen.",
+            "connection": "Kan geen verbinding maken met Nogin.nl. Controleer je verbinding en probeer het opnieuw.",
+            "invalid_person": "Selecteer bruurs uit de beschikbare lijst.",
+            "auth": "Nogin.nl heeft de toegang geweigerd (HTTP 401 of 403). Deze integratie ondersteunt momenteel geen inloggegevens. Neem contact op met de beheerder van de dienst.",
+            "rate_limit": "Nogin.nl ontvangt te veel verzoeken. Wacht even voordat je het opnieuw probeert.",
+            "unknown": "Er is een onverwachte API-fout opgetreden. Bekijk de Home Assistant-logboeken voor meer informatie."
+        }
+    }
+}

@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "title": "Select bruurs",
-                "description": "Choose the bruurs to add as switches. You can change this selection later in the integration options.",
+                "description": "Choose the bruurs to add. You can change this selection later in the integration options.",
                 "data": {
                     "persons": "Bruurs"
                 }
@@ -26,7 +26,7 @@
         "step": {
             "init": {
                 "title": "Select bruurs",
-                "description": "Tick the bruurs whose switches you want in Home Assistant. Unticking a person removes their switch. You can leave everyone unticked.",
+                "description": "Tick the bruurs you want to see in Home Assistant. Unticking a person removes their entity.",
                 "data": {
                     "persons": "Bruurs"
                 }
