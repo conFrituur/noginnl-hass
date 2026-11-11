@@ -4,8 +4,6 @@ Create switch entities for bruurs from Nogin.nl. Each switch shows
 whether that person is still in the Netherlands; changing it updates their status
 on Nogin.nl.
 
-Requires Home Assistant **2026.3.0 or newer**.
-
 <!-- ha-marketplace:exclude-start -->
 
 ## Install from GitHub (Home Assistant Marketplace)
@@ -18,8 +16,11 @@ Requires Home Assistant **2026.3.0 or newer**.
 3. Open **Nogin.nl** in the Marketplace and select **Install**.
 4. Follow any restart prompt, then configure the integration below.
 
-
 <!-- ha-marketplace:exclude-end -->
+
+## Operational Characteristics
+
+Polls the status of all bruurs once a minute via REST Api nogin.nl
 
 ## Configuration
 
