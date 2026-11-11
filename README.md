@@ -1,4 +1,4 @@
-# Nogin.nl bruur switches
+# Nogin.nl bruur integration
 
 Create switch entities for bruurs from Nogin.nl. Each switch shows
 whether that person is still in the Netherlands; changing it updates their status
