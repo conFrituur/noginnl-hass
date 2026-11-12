@@ -4,6 +4,11 @@ Create switch entities for bruurs from Nogin.nl. Each switch shows
 whether that person is still in the Netherlands; changing it updates their status
 on Nogin.nl.
 
+## Operational Characteristics
+
+* Polls the status of all bruurs **once a minute** with a single request.
+
+
 <!-- ha-marketplace:exclude-start -->
 
 ## Install from GitHub (Home Assistant Marketplace)
@@ -17,10 +22,6 @@ on Nogin.nl.
 4. Follow any restart prompt, then configure the integration below.
 
 <!-- ha-marketplace:exclude-end -->
-
-## Operational Characteristics
-
-* Polls the status of all bruurs once a minute.
 
 ## Configuration
 
@@ -38,3 +39,7 @@ New API people are available in the options form but are never added automatical
 Selected people temporarily missing from the API remain unavailable until they return.
 Existing installations from before person selection must choose their people in
 Configure after updating; previously automatic switches are removed unless selected.
+
+## AI Disclosure
+
+AI assistance was used in developing this integration. All code has been reviewed by a human <3
