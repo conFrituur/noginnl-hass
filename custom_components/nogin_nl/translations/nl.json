@@ -2,10 +2,22 @@
     "config": {
         "step": {
             "user": {
-                "title": "Selecteer bruurs",
+                "title": "Configureer Nogin.nl",
                 "description": "Kies de bruurs die je wilt toevoegen. Je kunt deze selectie later wijzigen in de integratieopties.",
-                "data": {
-                    "persons": "Bruurs"
+                "sections": {
+                    "person_selection": {
+                        "name": "Bruurs",
+                        "data": {
+                            "persons": " "
+                        }
+                    },
+                    "testing": {
+                        "name": "Lokale testmodus",
+                        "data": {
+                            "local_testing_mode": "Lokale testmodus"
+                        },
+                        "description": "Dry-run automatiseringen zonder veranderingen naar de live API te sturen"
+                    }
                 }
             }
         },
@@ -25,10 +37,22 @@
     "options": {
         "step": {
             "init": {
-                "title": "Selecteer bruurs",
-                "description": "Vink de bruurs aan die in Home Assistant wilt. Als je een bruur uitvinkt, wordt zijn entity weer verwijderd.",
-                "data": {
-                    "persons": "Bruurs"
+                "title": "Configureer Nogin.nl",
+                "description": "Vink de bruurs aan die je in Home Assistant wilt zien. Als je een bruur uitvinkt, wordt zijn entiteit verwijderd.",
+                "sections": {
+                    "person_selection": {
+                        "name": "Bruurs",
+                        "data": {
+                            "persons": " "
+                        }
+                    },
+                    "testing": {
+                        "name": "Lokale testmodus",
+                        "data": {
+                            "local_testing_mode": "Lokale testmodus"
+                        },
+                        "description": "Dry-run automatiseringen zonder veranderingen naar de live API te sturen"
+                    }
                 }
             }
         },
@@ -39,6 +63,12 @@
             "auth": "Nogin.nl heeft de toegang geweigerd (HTTP 401 of 403). Deze integratie ondersteunt momenteel geen inloggegevens. Neem contact op met de beheerder van de dienst.",
             "rate_limit": "Nogin.nl ontvangt te veel verzoeken. Wacht even voordat je het opnieuw probeert.",
             "unknown": "Er is een onverwachte API-fout opgetreden. Bekijk de Home Assistant-logboeken voor meer informatie."
+        }
+    },
+    "issues": {
+        "local_testing_mode": {
+            "title": "Lokale testmodus is ingeschakeld",
+            "description": "**{name}** gebruikt de lokale testmodus. Er worden geen actuele gegevens van Nogin.nl opgehaald en wijzigingen worden niet naar Nogin.nl verstuurd.\n\nGa naar **Instellingen → Apparaten & diensten → Nogin.nl → Configureren**, schakel **Lokale testmodus** uit en sla op om de live API weer te gebruiken. Lokale testwijzigingen worden niet verstuurd."
         }
     }
 }

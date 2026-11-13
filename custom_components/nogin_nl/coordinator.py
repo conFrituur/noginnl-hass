@@ -12,6 +12,7 @@ from .api import (
     NoginNLApiClientError,
     NoginNLApiClientRateLimitError,
 )
+from .const import CONF_LOCAL_PEOPLE, CONF_LOCAL_TESTING_MODE
 
 if TYPE_CHECKING:
     from .data import NoginNLConfigEntry
@@ -25,6 +26,8 @@ class NoginNLDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self) -> Any:
         """Update data via library."""
+        if self.config_entry.data.get(CONF_LOCAL_TESTING_MODE, False):
+            return self.config_entry.data[CONF_LOCAL_PEOPLE]
         try:
             return await self.config_entry.runtime_data.client.async_get_data()
         except NoginNLApiClientAuthenticationError as exception:

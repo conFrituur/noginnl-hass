@@ -11,11 +11,12 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.const import Platform
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import NoginNLApiClient
-from .const import DOMAIN, LOGGER
+from .const import CONF_LOCAL_TESTING_MODE, DOMAIN, LOGGER
 from .coordinator import NoginNLDataUpdateCoordinator
 from .data import NoginNLData
 
@@ -39,7 +40,11 @@ async def async_setup_entry(
         hass=hass,
         logger=LOGGER,
         name=DOMAIN,
-        update_interval=timedelta(minutes=1),
+        update_interval=(
+            None
+            if entry.data.get(CONF_LOCAL_TESTING_MODE, False)
+            else timedelta(minutes=1)
+        ),
         config_entry=entry,
     )
     entry.runtime_data = NoginNLData(
@@ -53,6 +58,9 @@ async def async_setup_entry(
     # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
     await coordinator.async_config_entry_first_refresh()
 
+    await async_update_testing_warning(hass, entry)
+    entry.async_on_unload(entry.add_update_listener(async_update_testing_warning))
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
@@ -64,3 +72,25 @@ async def async_unload_entry(
 ) -> bool:
     """Handle removal of an entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_update_testing_warning(
+    hass: HomeAssistant,
+    entry: NoginNLConfigEntry,
+) -> None:
+    """Keep a persistent reminder while this entry uses local testing mode."""
+    issue_id = f"local_testing_mode_{entry.entry_id}"
+    if entry.data.get(CONF_LOCAL_TESTING_MODE, False):
+        ir.async_create_issue(
+            hass,
+            DOMAIN,
+            issue_id,
+            config_entry_id=entry.entry_id,
+            is_fixable=False,
+            is_persistent=True,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="local_testing_mode",
+            translation_placeholders={"name": entry.title},
+        )
+    else:
+        ir.async_delete_issue(hass, DOMAIN, issue_id)

@@ -2,10 +2,22 @@
     "config": {
         "step": {
             "user": {
-                "title": "Select bruurs",
+                "title": "Configure Nogin.nl",
                 "description": "Choose the bruurs to add. You can change this selection later in the integration options.",
-                "data": {
-                    "persons": "Bruurs"
+                "sections": {
+                    "person_selection": {
+                        "name": "Bruurs",
+                        "data": {
+                            "persons": " "
+                        }
+                    },
+                    "testing": {
+                        "name": "Local testing mode",
+                        "data": {
+                            "local_testing_mode": "Local testing mode"
+                        },
+                        "description": "Dry-run your automations without pushing any changes to the live API."
+                    }
                 }
             }
         },
@@ -25,10 +37,22 @@
     "options": {
         "step": {
             "init": {
-                "title": "Select bruurs",
-                "description": "Tick the bruurs you want to see in Home Assistant. Unticking a person removes their entity.",
-                "data": {
-                    "persons": "Bruurs"
+                "title": "Configure Nogin.nl",
+                "description": "Tick the bruurs you want to see in Home Assistant. Unticking a bruur removes their entity.",
+                "sections": {
+                    "person_selection": {
+                        "name": "Bruurs",
+                        "data": {
+                            "persons": " "
+                        }
+                    },
+                    "testing": {
+                        "name": "Local Testing Mode",
+                        "data": {
+                            "local_testing_mode": "Local testing mode"
+                        },
+                        "description": "Dry-run your automations without pushing any changes to the live API."
+                    }
                 }
             }
         },
@@ -39,6 +63,12 @@
             "auth": "Nogin.nl denied access (HTTP 401 or 403). This integration does not currently support credentials. Please contact the service administrator.",
             "rate_limit": "Nogin.nl is receiving too many requests. Please wait before trying again.",
             "unknown": "An unexpected API error occurred. Check the Home Assistant logs for details."
+        }
+    },
+    "issues": {
+        "local_testing_mode": {
+            "title": "Local testing mode enabled",
+            "description": "**{name}** is set to local testing mode.\n\nTo resume live operation, go to **Settings → Devices & services → Nogin.nl → Configure**, turn off **Local testing mode**, and save. Local test changes will not be uploaded."
         }
     }
 }

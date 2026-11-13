@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_PERSONS
+from .const import CONF_LOCAL_PEOPLE, CONF_LOCAL_TESTING_MODE, CONF_PERSONS
 from .entity import NoginNLEntity
 
 if TYPE_CHECKING:
@@ -28,6 +29,7 @@ async def async_setup_entry(
     coordinator = entry.runtime_data.coordinator
     registry = er.async_get(hass)
     known_people: set[str] = set()
+    local_mode = entry.data.get(CONF_LOCAL_TESTING_MODE, False)
 
     @callback
     def async_sync_selected_people() -> None:
@@ -55,7 +57,16 @@ async def async_setup_entry(
         _hass: HomeAssistant,
         _entry: NoginNLConfigEntry,
     ) -> None:
-        """Apply options to this platform without reloading the config entry."""
+        """Apply person selections and mode changes without reloading switches."""
+        nonlocal local_mode
+        requested_local = entry.data.get(CONF_LOCAL_TESTING_MODE, False)
+        if requested_local != local_mode:
+            local_mode = requested_local
+            coordinator.update_interval = None if local_mode else timedelta(minutes=1)
+            if local_mode:
+                coordinator.async_set_updated_data(entry.data[CONF_LOCAL_PEOPLE])
+            else:
+                await coordinator.async_request_refresh()
         async_sync_selected_people()
 
     async_sync_selected_people()
@@ -96,19 +107,26 @@ class NoginNLSwitch(NoginNLEntity, SwitchEntity):
         return None
 
     async def _async_set_status(self, *, is_nog_in_nl: bool) -> None:
-        """Publish the status confirmed by PATCH without waiting for a GET."""
-        person = (
-            await self.coordinator.config_entry.runtime_data.client.async_set_nog_in_nl(
+        """Persist local changes or publish the status confirmed by the API."""
+        entry = self.coordinator.config_entry
+        local_mode = entry.data.get(CONF_LOCAL_TESTING_MODE, False)
+        if local_mode:
+            person = {"name": self._person_name, "isNogInNL": is_nog_in_nl}
+        else:
+            person = await entry.runtime_data.client.async_set_nog_in_nl(
                 self._person_name, is_nog_in_nl
             )
-        )
-        # Update local cache with PATCH reponse data
+        # Update the coordinator cache with the confirmed state.
         updated_people = []
         for item in self.coordinator.data:
             if item.get("name") == self._person_name:
                 updated_people.append(person)
             else:
                 updated_people.append(item)
+        if local_mode:
+            self.hass.config_entries.async_update_entry(
+                entry, data={**entry.data, CONF_LOCAL_PEOPLE: updated_people}
+            )
         self.coordinator.async_set_updated_data(updated_people)
 
     async def async_turn_on(self, **_: Any) -> None:

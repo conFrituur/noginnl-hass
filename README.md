@@ -40,6 +40,16 @@ Selected people temporarily missing from the API remain unavailable until they r
 Existing installations from before person selection must choose their people in
 Configure after updating; previously automatic switches are removed unless selected.
 
+### Local testing mode
+
+Enable **Local testing mode** to dry-run and test automations with the nogin.nl integration.
+Once enabled it fetches names and states once, no further API reads or writes occur. 
+Disable it to resume live API access. Local test changes are never uploaded when returning to live mode.
+
+Local testing mode also raises a persistent warning under **Settings → System →
+Repairs**, linked to this integration. The warning clears automatically when
+local testing mode is disabled and is removed when the integration is deleted.
+
 ## AI Disclosure
 
 AI assistance was used in developing this integration. All code has been reviewed by a human <3
