@@ -68,7 +68,18 @@
     "issues": {
         "local_testing_mode": {
             "title": "Local testing mode enabled",
-            "description": "**{name}** is set to local testing mode.\n\nTo resume live operation, go to **Settings → Devices & services → Nogin.nl → Configure**, turn off **Local testing mode**, and save. Local test changes will not be uploaded."
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "Turn off local testing mode",
+                        "description": "**{name}** is set to local testing mode.\n\nTurn it off to resume live operation. Local test changes will not be uploaded.",
+                        "submit": "Turn off local testing mode"
+                    }
+                },
+                "abort": {
+                    "entry_not_found": "This Nogin.nl entry no longer exists."
+                }
+            }
         }
     }
 }

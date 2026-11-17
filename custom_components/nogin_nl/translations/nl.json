@@ -68,7 +68,18 @@
     "issues": {
         "local_testing_mode": {
             "title": "Lokale testmodus is ingeschakeld",
-            "description": "**{name}** gebruikt de lokale testmodus. Er worden geen actuele gegevens van Nogin.nl opgehaald en wijzigingen worden niet naar Nogin.nl verstuurd.\n\nGa naar **Instellingen → Apparaten & diensten → Nogin.nl → Configureren**, schakel **Lokale testmodus** uit en sla op om de live API weer te gebruiken. Lokale testwijzigingen worden niet verstuurd."
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "Lokale testmodus uitschakelen",
+                        "description": "**{name}** gebruikt de lokale testmodus. Er worden geen actuele gegevens van Nogin.nl opgehaald en wijzigingen worden niet naar Nogin.nl verstuurd.\n\nSchakel de testmodus uit om de live API weer te gebruiken. Lokale testwijzigingen worden niet verstuurd.",
+                        "submit": "Lokale testmodus uitschakelen"
+                    }
+                },
+                "abort": {
+                    "entry_not_found": "Deze Nogin.nl-integratie bestaat niet meer."
+                }
+            }
         }
     }
 }

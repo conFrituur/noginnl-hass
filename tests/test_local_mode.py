@@ -15,6 +15,7 @@ from custom_components.nogin_nl.const import (
     CONF_PERSONS,
     DOMAIN,
 )
+from custom_components.nogin_nl.repairs import async_create_fix_flow
 
 if TYPE_CHECKING:
     from unittest.mock import AsyncMock
@@ -158,3 +159,53 @@ async def test_change_mode_in_options(
     assert config_entry.runtime_data.coordinator is coordinator
     mock_api.async_get_data.assert_awaited_once()
     mock_api.async_set_nog_in_nl.assert_not_awaited()
+
+
+async def test_repair_disables_local_mode(
+    hass: HomeAssistant, mock_api: AsyncMock, config_entry: MockConfigEntry
+) -> None:
+    """The repair dialog turns local testing mode off without uploading."""
+    config_entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(
+        config_entry,
+        data={
+            **config_entry.data,
+            CONF_LOCAL_TESTING_MODE: True,
+            CONF_LOCAL_PEOPLE: mock_api.async_get_data.return_value,
+        },
+    )
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    coordinator = config_entry.runtime_data.coordinator
+    registry = ir.async_get(hass)
+    issue_id = f"local_testing_mode_{config_entry.entry_id}"
+    issue = registry.async_get_issue(DOMAIN, issue_id)
+    assert issue is not None
+    assert issue.is_fixable
+    mock_api.async_get_data.reset_mock()
+
+    flow = await async_create_fix_flow(hass, issue_id, issue.data)
+    flow.hass = hass
+    result = await flow.async_step_init()
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "confirm"
+    assert result["description_placeholders"] == {"name": "Family"}
+    mock_api.async_get_data.assert_not_awaited()
+
+    result = await flow.async_step_confirm({})
+    await hass.async_block_till_done()
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert config_entry.data[CONF_LOCAL_TESTING_MODE] is False
+    assert registry.async_get_issue(DOMAIN, issue_id) is None
+    assert coordinator.update_interval is not None
+    mock_api.async_get_data.assert_awaited_once()
+    mock_api.async_set_nog_in_nl.assert_not_awaited()
+
+
+async def test_repair_entry_removed(hass: HomeAssistant) -> None:
+    """The repair flow aborts when its entry no longer exists."""
+    flow = await async_create_fix_flow(hass, "issue", {"entry_id": "missing"})
+    flow.hass = hass
+    result = await flow.async_step_init()
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "entry_not_found"
