@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 
 # https://developers.home-assistant.io/docs/integration_fetching_data#coordinated-single-api-poll-for-data-for-all-entities
-class NoginNLDataUpdateCoordinator(DataUpdateCoordinator):
+class NoginNLDataUpdateCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
     """
     Class to manage fetching data from the API.
 
@@ -71,7 +71,7 @@ class NoginNLDataUpdateCoordinator(DataUpdateCoordinator):
         self._failing_since = None
         self.update_interval = self._normal_update_interval(self.config_entry)
 
-    async def _async_update_data(self) -> Any:
+    async def _async_update_data(self) -> list[dict[str, Any]]:
         """Update data via library."""
         if self.config_entry.data.get(CONF_LOCAL_TESTING_MODE, False):
             return self.config_entry.data[CONF_LOCAL_PEOPLE]
@@ -92,7 +92,7 @@ class NoginNLDataUpdateCoordinator(DataUpdateCoordinator):
         self.async_reset_polling()
         return data
 
-    def _handle_failure(self, exception: NoginNLApiClientError) -> Any:
+    def _handle_failure(self, exception: NoginNLApiClientError) -> list[dict[str, Any]]:
         """
         Keep the last known data during the grace period, then fail.
 

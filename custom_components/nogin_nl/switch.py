@@ -93,14 +93,14 @@ class NoginNLSwitch(NoginNLEntity, SwitchEntity):
         )
 
     @property
-    def available(self) -> bool:
+    def available(self) -> bool:  # type: ignore[override]
         """Return whether polling succeeded and this person still exists."""
         return super().available and any(
             person.get("name") == self._person_name for person in self.coordinator.data
         )
 
     @property
-    def is_on(self) -> bool | None:
+    def is_on(self) -> bool | None:  # type: ignore[override]
         """Return true if the switch is on."""
         for person in self.coordinator.data:
             if person.get("name") == self._person_name:

@@ -80,7 +80,8 @@ async def test_patch_failure_preserves_state(
     await hass.async_block_till_done()
     mock_api.async_set_nog_in_nl.side_effect = NoginNLApiClientError("PATCH failed")
     with pytest.raises(
-        HomeAssistantError, match=r"Could not update Sjaak on Nogin\.nl: PATCH failed"
+        HomeAssistantError,
+        match=r"Could not update state for Sjaak on Nogin\.nl: PATCH failed",
     ):
         await hass.services.async_call(
             "switch", "turn_off", {ATTR_ENTITY_ID: "switch.family_sjaak"}, blocking=True

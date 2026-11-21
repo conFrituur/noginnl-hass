@@ -196,7 +196,7 @@ async def test_toggle_during_grace_period(
         )
     assert exc_info.value.translation_key == "set_status_failed"
     assert str(exc_info.value) == (
-        "Could not update Sjaak on Nogin.nl: Connection refused"
+        "Could not update state for Sjaak on Nogin.nl: Connection refused"
     )
     assert hass.states.get(ENTITY_ID).state == STATE_ON
 

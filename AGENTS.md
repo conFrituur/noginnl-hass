@@ -47,6 +47,7 @@ Use Python 3.14.2 or newer within the 3.14 series, matching Home Assistant's min
 - `bash scripts/lint`: format Python files and automatically fix lint findings; review the resulting diff.
 - `python3 -m ruff check .`: run CI's lint checks without modifying files.
 - `python3 -m ruff format . --check`: verify formatting without modifying files.
+- `npx pyright@1.1.408 --pythonpath "$(which python3)" custom_components/nogin_nl`: run the type checker behind Pylance; it must report 0 errors. Home Assistant must be installed in the active environment so its imports resolve.
 
 There is no separate build step. CI runs pytest, Ruff, Hassfest, and HACS integration validation.
 
