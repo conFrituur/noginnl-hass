@@ -7,7 +7,6 @@ https://github.com/ludeeus/integration_blueprint
 
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.const import Platform
@@ -16,7 +15,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.loader import async_get_loaded_integration
 
 from .api import NoginNLApiClient
-from .const import CONF_LOCAL_TESTING_MODE, DOMAIN, LOGGER
+from .const import CONF_LOCAL_TESTING_MODE, DOMAIN
 from .coordinator import NoginNLDataUpdateCoordinator
 from .data import NoginNLData
 
@@ -36,17 +35,7 @@ async def async_setup_entry(
     entry: NoginNLConfigEntry,
 ) -> bool:
     """Set up this integration using UI."""
-    coordinator = NoginNLDataUpdateCoordinator(
-        hass=hass,
-        logger=LOGGER,
-        name=DOMAIN,
-        update_interval=(
-            None
-            if entry.data.get(CONF_LOCAL_TESTING_MODE, False)
-            else timedelta(minutes=1)
-        ),
-        config_entry=entry,
-    )
+    coordinator = NoginNLDataUpdateCoordinator(hass=hass, config_entry=entry)
     entry.runtime_data = NoginNLData(
         client=NoginNLApiClient(
             session=async_get_clientsession(hass),

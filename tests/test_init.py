@@ -53,25 +53,19 @@ async def test_polling_and_unload(
     mock_api.async_get_data.assert_not_awaited()
 
 
-@pytest.mark.parametrize(
-    "error",
-    [
-        NoginNLApiClientCommunicationError("offline"),
-        NoginNLApiClientRateLimitError("slow down", retry_after=120),
-    ],
-)
-async def test_update_failure_and_recovery(
+async def test_rate_limit_failure_and_recovery(
     hass: HomeAssistant,
     mock_api: AsyncMock,
     config_entry: MockConfigEntry,
-    error: Exception,
 ) -> None:
-    """Polling failures mark switches unavailable, and a later success restores them."""
+    """Rate limiting skips the grace period, and a later success restores switches."""
     config_entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
     coordinator = config_entry.runtime_data.coordinator
-    mock_api.async_get_data.side_effect = error
+    mock_api.async_get_data.side_effect = NoginNLApiClientRateLimitError(
+        "slow down", retry_after=120
+    )
     await coordinator.async_refresh()
     assert not coordinator.last_update_success
     assert hass.states.get("switch.family_sjaak").state == STATE_UNAVAILABLE
@@ -96,7 +90,7 @@ async def test_first_refresh_failure(
     error: Exception,
     state: ConfigEntryState,
 ) -> None:
-    """Failed initial requests do not create apparently working switches."""
+    """Failed initial requests skip the grace period and create no switches."""
     config_entry.add_to_hass(hass)
     mock_api.async_get_data.side_effect = error
     assert not await hass.config_entries.async_setup(config_entry.entry_id)

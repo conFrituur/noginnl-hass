@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_LOCAL_PEOPLE, CONF_LOCAL_TESTING_MODE, CONF_PERSONS
+from .api import NoginNLApiClientError
+from .const import CONF_LOCAL_PEOPLE, CONF_LOCAL_TESTING_MODE, CONF_PERSONS, DOMAIN
 from .entity import NoginNLEntity
 
 if TYPE_CHECKING:
@@ -62,7 +63,7 @@ async def async_setup_entry(
         requested_local = entry.data.get(CONF_LOCAL_TESTING_MODE, False)
         if requested_local != local_mode:
             local_mode = requested_local
-            coordinator.update_interval = None if local_mode else timedelta(minutes=1)
+            coordinator.async_reset_polling()
             if local_mode:
                 coordinator.async_set_updated_data(entry.data[CONF_LOCAL_PEOPLE])
             else:
@@ -113,9 +114,19 @@ class NoginNLSwitch(NoginNLEntity, SwitchEntity):
         if local_mode:
             person = {"name": self._person_name, "isNogInNL": is_nog_in_nl}
         else:
-            person = await entry.runtime_data.client.async_set_nog_in_nl(
-                self._person_name, is_nog_in_nl
-            )
+            try:
+                person = await entry.runtime_data.client.async_set_nog_in_nl(
+                    self._person_name, is_nog_in_nl
+                )
+            except NoginNLApiClientError as exception:
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key="set_status_failed",
+                    translation_placeholders={
+                        "name": self._person_name.capitalize(),
+                        "error": str(exception),
+                    },
+                ) from exception
         # Update the coordinator cache with the confirmed state.
         updated_people = []
         for item in self.coordinator.data:

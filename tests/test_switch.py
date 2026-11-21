@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from homeassistant.const import ATTR_ENTITY_ID, STATE_OFF, STATE_ON, STATE_UNAVAILABLE
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
 from custom_components.nogin_nl.api import NoginNLApiClientError
@@ -78,7 +79,9 @@ async def test_patch_failure_preserves_state(
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
     mock_api.async_set_nog_in_nl.side_effect = NoginNLApiClientError("PATCH failed")
-    with pytest.raises(NoginNLApiClientError, match="PATCH failed"):
+    with pytest.raises(
+        HomeAssistantError, match=r"Could not update Sjaak on Nogin\.nl: PATCH failed"
+    ):
         await hass.services.async_call(
             "switch", "turn_off", {ATTR_ENTITY_ID: "switch.family_sjaak"}, blocking=True
         )

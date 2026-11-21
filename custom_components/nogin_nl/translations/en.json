@@ -81,5 +81,10 @@
                 }
             }
         }
+    },
+    "exceptions": {
+        "set_status_failed": {
+            "message": "Could not update state for {name} on Nogin.nl: {error}"
+        }
     }
 }
